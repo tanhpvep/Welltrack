@@ -565,7 +565,8 @@ view_mode = st.sidebar.radio(
 
 st.sidebar.markdown("---")
 st.sidebar.subheader("Danh sách 10 giếng đang thi công:")
-well_names = list(wells_db.keys())
+well_names = list(st.session_state["wells_db"].keys())
+
 
 # Hỗ trợ mở từng giếng trên từng tab riêng biệt qua URL query params (?well=Well+DH-01X)
 query_well = st.query_params.get("well", None)
@@ -577,7 +578,7 @@ selected_well_name = st.sidebar.selectbox("Chọn giếng cần kiểm tra:", we
 # Cập nhật query param để URL phản ánh đúng giếng đang xem
 st.query_params["well"] = selected_well_name
 
-selected_well = wells_db[selected_well_name]
+selected_well = st.session_state["wells_db"].get(selected_well_name, {})
 
 # Hiển thị badge trạng thái trên Sidebar
 status_colors = {
@@ -587,20 +588,26 @@ status_colors = {
     "Wireline Logging": "🟣",
     "NPT Alert - Stuck Pipe": "🔴"
 }
-st.sidebar.info(f"**Giàn:** {selected_well['rig']}\n\n**Lô:** {selected_well.get('block', 'Lô 15-1')}\n\n**Bể:** {selected_well.get('basin', 'Bể Cửu Long')}\n\n**Mỏ:** {selected_well['field']}\n\n**Trạng thái:** {status_colors.get(selected_well['status'], '⚪')} {selected_well['status']}\n\n**Cập nhật:** {selected_well['last_update']}")
+# Sửa dòng 590 thành cấu trúc dùng .get để an toàn tuyệt đối:
+current_sidebar_well = st.session_state["wells_db"].get(selected_well_name, {})
+st.sidebar.info(f"**Giàn:** {current_sidebar_well.get('rig', '')}\n\n**Lô:** {current_sidebar_well.get('block', 'Lô 15-1')}\n\n**Bể:** {current_sidebar_well.get('basin', '')}")
+
 
 # Khung chỉnh sửa và thêm giếng độc lập
 with st.sidebar.expander("📝 Chỉnh sửa / Thêm Giếng Mới"):
     st.write("**✏️ Sửa thông tin giếng hiện tại:**")
+    current_well_data = st.session_state["wells_db"].get(selected_well_name, {})
+    
     edit_name = st.text_input("Tên giếng:", value=selected_well_name, key="edit_name")
-    edit_rig = st.text_input("Giàn Khoan:", value=st.session_state["wells_db"][selected_well_name].get('rig', ''), key="edit_rig")
-    edit_block = st.text_input("Số Lô:", value=selected_well.get('block', 'Lô 15-1'), key="edit_block")
+    edit_rig = st.text_input("Giàn Khoan:", value=current_well_data.get('rig', ''), key="edit_rig")
+    edit_block = st.text_input("Số Lô:", value=current_well_data.get('block', 'Lô 15-1'), key="edit_block")
     
     basin_options = ["Bể Cửu Long", "Bể Nam Côn Sơn", "Bể Sông Hồng", "Bể Malay - Thổ Chu", "Bể Phú Khánh", "Khác"]
-    default_basin_idx = basin_options.index(selected_well['basin']) if selected_well['basin'] in basin_options else 0
+    well_basin = current_well_data.get('basin', '')
+    default_basin_idx = basin_options.index(well_basin) if well_basin in basin_options else 0
     edit_basin = st.selectbox("Bể trầm tích:", basin_options, index=default_basin_idx, key="edit_basin")
     
-    edit_field = st.text_input("Mỏ / Cấu tạo:", value=selected_well.get('field', ''), key="edit_field")
+    edit_field = st.text_input("Mỏ / Cấu tạo:", value=current_well_data.get('field', ''), key="edit_field")
 
     if st.button("💾 Lưu thay đổi thông tin giếng", key="btn_save_well"):
         if edit_name != selected_well_name:
@@ -611,7 +618,7 @@ with st.sidebar.expander("📝 Chỉnh sửa / Thêm Giếng Mới"):
         else:
             current_key = selected_well_name
             
-        # Cập nhật thông tin chi tiết vào Session State
+        # Cập nhật thông tin chi tiết vào Session State dựa trên dữ liệu mới nhập
         st.session_state["wells_db"][current_key]['name'] = edit_name
         st.session_state["wells_db"][current_key]['rig'] = edit_rig
         st.session_state["wells_db"][current_key]['block'] = edit_block
@@ -620,6 +627,7 @@ with st.sidebar.expander("📝 Chỉnh sửa / Thêm Giếng Mới"):
         
         st.success("✓ Đã cập nhật thông tin giếng thành công!")
         st.rerun()
+
 
     st.markdown("---")
     st.write("**➕ Thêm giếng khoan mới độc lập:**")
