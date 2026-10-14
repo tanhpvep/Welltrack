@@ -247,7 +247,7 @@ st.sidebar.info(f"Giàn: {selected_well['rig']}\n\nMỏ: {selected_well['field']
 ==========================================
 
 
-5. CHI TIẾT GIẾNG (3D SURVEY + DDR)
+#5. CHI TIẾT GIẾNG (3D SURVEY + DDR)
 
 
 ==========================================
@@ -315,7 +315,7 @@ st.success("Không ghi nhận thời gian gián đoạn NPT.")
 ==========================================
 
 
-6. TỔNG QUAN ĐỘI GIÀN KHOAN
+#6. TỔNG QUAN ĐỘI GIÀN KHOAN
 
 
 ==========================================
@@ -334,7 +334,7 @@ st.plotly_chart(fig_multi, use_container_width=True)
 ==========================================
 
 
-7. NẠP BÁO CÁO DDR (TÍCH HỢP GOOGLE-GENAI AI)
+#7. NẠP BÁO CÁO DDR (TÍCH HỢP GOOGLE-GENAI AI)
 
 
 ==========================================
