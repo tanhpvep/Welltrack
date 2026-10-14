@@ -623,85 +623,85 @@ st.sidebar.info(f"**Giàn:** {current_sidebar_well.get('rig', '')}\n\n**Lô:** {
 
 # Khung chỉnh sửa và thêm giếng độc lập
 with st.sidebar.expander("📝 Chỉnh sửa / Thêm Giếng Mới"):
-    st.write("**✏️ Sửa thông tin giếng hiện tại:**")
-    current_well_data = st.session_state["wells_db"].get(selected_well_name, {})
-    
-    edit_name = st.text_input("Tên giếng:", value=selected_well_name, key="edit_name")
-    edit_rig = st.text_input("Giàn Khoan:", value=current_well_data.get('rig', ''), key="edit_rig")
-    edit_block = st.text_input("Số Lô:", value=current_well_data.get('block', 'Lô 15-1'), key="edit_block")
-    
-    basin_options = ["Bể Cửu Long", "Bể Nam Côn Sơn", "Bể Sông Hồng", "Bể Malay - Thổ Chu", "Bể Phú Khánh", "Khác"]
-    well_basin = current_well_data.get('basin', '')
-    default_basin_idx = basin_options.index(well_basin) if well_basin in basin_options else 0
-    edit_basin = st.selectbox("Bể trầm tích:", basin_options, index=default_basin_idx, key="edit_basin")
-    
-    edit_field = st.text_input("Mỏ / Cấu tạo:", value=current_well_data.get('field', ''), key="edit_field")
+st.write("**✏️ Sửa thông tin giếng hiện tại:**")
+current_well_data = st.session_state["wells_db"].get(selected_well_name, {})
 
-    if st.button("💾 Lưu thay đổi thông tin giếng", key="btn_save_well"):
-        if edit_name != selected_well_name:
-            # Đổi Key định danh trong Dictionary tổng của Session State
-            st.session_state["wells_db"][edit_name] = st.session_state["wells_db"].pop(selected_well_name)
-            st.query_params["well"] = edit_name
-            current_key = edit_name
-        else:
-            current_key = selected_well_name
-            
-        # Cập nhật thông tin chi tiết vào Session State dựa trên dữ liệu mới nhập
-        st.session_state["wells_db"][current_key]['name'] = edit_name
-        st.session_state["wells_db"][current_key]['rig'] = edit_rig
-        st.session_state["wells_db"][current_key]['block'] = edit_block
-        st.session_state["wells_db"][current_key]['basin'] = edit_basin
-        st.session_state["wells_db"][current_key]['field'] = edit_field
+edit_name = st.text_input("Tên giếng:", value=selected_well_name, key="edit_name")
+edit_rig = st.text_input("Giàn Khoan:", value=current_well_data.get('rig', ''), key="edit_rig")
+edit_block = st.text_input("Số Lô:", value=current_well_data.get('block', 'Lô 15-1'), key="edit_block")
+
+basin_options = ["Bể Cửu Long", "Bể Nam Côn Sơn", "Bể Sông Hồng", "Bể Malay - Thổ Chu", "Bể Phú Khánh", "Khác"]
+well_basin = current_well_data.get('basin', '')
+default_basin_idx = basin_options.index(well_basin) if well_basin in basin_options else 0
+edit_basin = st.selectbox("Bể trầm tích:", basin_options, index=default_basin_idx, key="edit_basin")
+
+edit_field = st.text_input("Mỏ / Cấu tạo:", value=current_well_data.get('field', ''), key="edit_field")
+
+if st.button("💾 Lưu thay đổi thông tin giếng", key="btn_save_well"):
+    if edit_name != selected_well_name:
+        # Đổi Key định danh trong Dictionary tổng của Session State
+        st.session_state["wells_db"][edit_name] = st.session_state["wells_db"].pop(selected_well_name)
+        st.query_params["well"] = edit_name
+        current_key = edit_name
+    else:
+        current_key = selected_well_name
         
-        st.success("✓ Đã cập nhật thông tin giếng thành công!")
-        st.rerun()
+    # Cập nhật thông tin chi tiết vào Session State dựa trên dữ liệu mới nhập
+    st.session_state["wells_db"][current_key]['name'] = edit_name
+    st.session_state["wells_db"][current_key]['rig'] = edit_rig
+    st.session_state["wells_db"][current_key]['block'] = edit_block
+    st.session_state["wells_db"][current_key]['basin'] = edit_basin
+    st.session_state["wells_db"][current_key]['field'] = edit_field
+    
+    st.success("✓ Đã cập nhật thông tin giếng thành công!")
+    st.rerun()
 
 
-    st.markdown("---")
-    st.write("**➕ Thêm giếng khoan mới độc lập:**")
-    new_w_name = st.text_input("Tên giếng mới:", placeholder="Ví dụ: Well 15-1/05-LD-1X", key="new_w_name")
-    new_w_rig = st.text_input("Giàn khoan mới:", placeholder="Ví dụ: PV DRILLING I", key="new_w_rig")
-    new_w_block = st.text_input("Số Lô:", placeholder="Ví dụ: Lô 15-1/05", key="new_w_block")
-    new_w_basin = st.selectbox("Bể:", ["Bể Cửu Long", "Bể Nam Côn Sơn", "Bể Sông Hồng", "Bể Malay - Thổ Chu", "Bể Phú Khánh", "Khác"], key="new_w_basin")
-    new_w_td = st.number_input("Chiều sâu thiết kế TD (m):", min_value=500, max_value=8000, value=3800, key="new_w_td")
+st.markdown("---")
+st.write("**➕ Thêm giếng khoan mới độc lập:**")
+new_w_name = st.text_input("Tên giếng mới:", placeholder="Ví dụ: Well 15-1/05-LD-1X", key="new_w_name")
+new_w_rig = st.text_input("Giàn khoan mới:", placeholder="Ví dụ: PV DRILLING I", key="new_w_rig")
+new_w_block = st.text_input("Số Lô:", placeholder="Ví dụ: Lô 15-1/05", key="new_w_block")
+new_w_basin = st.selectbox("Bể:", ["Bể Cửu Long", "Bể Nam Côn Sơn", "Bể Sông Hồng", "Bể Malay - Thổ Chu", "Bể Phú Khánh", "Khác"], key="new_w_basin")
+new_w_td = st.number_input("Chiều sâu thiết kế TD (m):", min_value=500, max_value=8000, value=3800, key="new_w_td")
 
-    if st.button("➕ Tạo giếng độc lập mới", key="btn_add_well"):
-        if new_w_name.strip():
-            w_id = new_w_name.strip()
-            if w_id in st.session_state["wells_db"]:
-                st.error("❌ Tên giếng này đã tồn tại!")
-            else:
-                # Khởi tạo dữ liệu gốc kèm theo các thông số kỹ thuật từ dòng 621-644 của bạn
-                st.session_state["wells_db"][w_id] = {
-                    "name": w_id,
-                    "rig": new_w_rig.strip() or "PV DRILLING",
-                    "block": new_w_block.strip() or "Chưa xác định",
-                    "basin": new_w_basin,
-                    "field": new_w_name.strip(),
-                    "status": "Active Drilling",
-                    "target_depth": new_w_td,
-                    "current_md": 1200,
-                    "current_tvd": 1150,
-                    "hole_size": "12-1/4\"",
-                    "bit_type": "PDC",
-                    "mud_weight": "1.25 SG",
-                    "flow_rate": "750 GPM",
-                    "spp": "2800 psi",
-                    "rop": "14.0 m/h",
-                    "last_update": "2026-10-14 06:00",
-                    "activity_24h_summary": "Bắt đầu triển khai khoan tạo vỉa theo kế hoạch thi công giếng độc lập.",
-                    "forecast_24h_summary": "Tiếp tục khoan lỗ giếng, duy trì các thông số công nghệ và kiểm soát dung dịch.",
-                    "npt_hours": 0.0,
-                    "npt_summary": "Không có NPT.",
-                    "operations_log": [{"time": "00:00 - 24:00", "hours": 24.0, "desc": "Khoan tạo vỉa."}],
-                    "plan_points": [{"md": 0, "inc": 0, "azi": 0}, {"md": 500, "inc": 0, "azi": 0}, {"md": new_w_td, "inc": 20, "azi": 120}],
-                    "survey_points": [{"md": 0, "inc": 0, "azi": 0}, {"md": 500, "inc": 0.2, "azi": 20}, {"md": 1200, "inc": 10.5, "azi": 115}]
-                }
-                st.query_params["well"] = w_id
-                st.success(f"✓ Đã tạo thành công giếng độc lập {w_id}!")
-                st.rerun()
+if st.button("➕ Tạo giếng độc lập mới", key="btn_add_well"):
+    if new_w_name.strip():
+        w_id = new_w_name.strip()
+        if w_id in st.session_state["wells_db"]:
+            st.error("❌ Tên giếng này đã tồn tại!")
         else:
-            st.error("❌ Vui lòng nhập tên giếng!")
+            # Khởi tạo dữ liệu gốc kèm theo các thông số kỹ thuật từ dòng 621-644 của bạn
+            st.session_state["wells_db"][w_id] = {
+                "name": w_id,
+                "rig": new_w_rig.strip() or "PV DRILLING",
+                "block": new_w_block.strip() or "Chưa xác định",
+                "basin": new_w_basin,
+                "field": new_w_name.strip(),
+                "status": "Active Drilling",
+                "target_depth": new_w_td,
+                "current_md": 1200,
+                "current_tvd": 1150,
+                "hole_size": "12-1/4\"",
+                "bit_type": "PDC",
+                "mud_weight": "1.25 SG",
+                "flow_rate": "750 GPM",
+                "spp": "2800 psi",
+                "rop": "14.0 m/h",
+                "last_update": "2026-10-14 06:00",
+                "activity_24h_summary": "Bắt đầu triển khai khoan tạo vỉa theo kế hoạch thi công giếng độc lập.",
+                "forecast_24h_summary": "Tiếp tục khoan lỗ giếng, duy trì các thông số công nghệ và kiểm soát dung dịch.",
+                "npt_hours": 0.0,
+                "npt_summary": "Không có NPT.",
+                "operations_log": [{"time": "00:00 - 24:00", "hours": 24.0, "desc": "Khoan tạo vỉa."}],
+                "plan_points": [{"md": 0, "inc": 0, "azi": 0}, {"md": 500, "inc": 0, "azi": 0}, {"md": new_w_td, "inc": 20, "azi": 120}],
+                "survey_points": [{"md": 0, "inc": 0, "azi": 0}, {"md": 500, "inc": 0.2, "azi": 20}, {"md": 1200, "inc": 10.5, "azi": 115}]
+            }
+            st.query_params["well"] = w_id
+            st.success(f"✓ Đã tạo thành công giếng độc lập {w_id}!")
+            st.rerun()
+    else:
+        st.error("❌ Vui lòng nhập tên giếng!")
 
 
 
@@ -709,398 +709,398 @@ with st.sidebar.expander("📝 Chỉnh sửa / Thêm Giếng Mới"):
 # 5. MÀN HÌNH 1: CHI TIẾT GIẾNG (SIDE-BY-SIDE: 3D SURVEY VÀ CẬP NHẬT HOẠT ĐỘNG DDR)
 # ==========================================
 if view_mode == "Chi tiết Giếng (Quỹ đạo 3D + DDR)":
-    # Metrics Row
-    m_col1, m_col2, m_col3, m_col4, m_col5, m_col6 = st.columns(6)
-    with m_col1:
-        st.metric("Chiều sâu MD hiện tại", f"{selected_well['current_md']:,} m", delta=f"{selected_well.get('operations_log', [{}])[0].get('hours', 0)}h gần nhất")
-    with m_col2:
-        st.metric("Chiều sâu TVD", f"{selected_well['current_tvd']:,} m")
-    with m_col3:
-        st.metric("Chiều sâu thiết kế TD", f"{selected_well['target_depth']:,} m")
-    with m_col4:
-        pct = round((selected_well['current_md'] / selected_well['target_depth']) * 100, 1)
-        st.metric("Tiến độ đạt", f"{pct}%")
-    with m_col5:
-        st.metric("Tỷ trọng dung dịch", selected_well['mud_weight'])
-    with m_col6:
-        npt_val = selected_well['npt_hours']
-        st.metric("NPT 24h", f"{npt_val} giờ", delta_color="inverse", delta=f"{'-' + str(npt_val) + 'h dừng việc' if npt_val > 0 else 'Hoàn hảo'}")
+# Metrics Row
+m_col1, m_col2, m_col3, m_col4, m_col5, m_col6 = st.columns(6)
+with m_col1:
+    st.metric("Chiều sâu MD hiện tại", f"{selected_well['current_md']:,} m", delta=f"{selected_well.get('operations_log', [{}])[0].get('hours', 0)}h gần nhất")
+with m_col2:
+    st.metric("Chiều sâu TVD", f"{selected_well['current_tvd']:,} m")
+with m_col3:
+    st.metric("Chiều sâu thiết kế TD", f"{selected_well['target_depth']:,} m")
+with m_col4:
+    pct = round((selected_well['current_md'] / selected_well['target_depth']) * 100, 1)
+    st.metric("Tiến độ đạt", f"{pct}%")
+with m_col5:
+    st.metric("Tỷ trọng dung dịch", selected_well['mud_weight'])
+with m_col6:
+    npt_val = selected_well['npt_hours']
+    st.metric("NPT 24h", f"{npt_val} giờ", delta_color="inverse", delta=f"{'-' + str(npt_val) + 'h dừng việc' if npt_val > 0 else 'Hoàn hảo'}")
 
-    st.markdown("<hr style='margin: 10px 0;'>", unsafe_allow_html=True)
+st.markdown("<hr style='margin: 10px 0;'>", unsafe_allow_html=True)
 
-    # KHỞI TẠO BỐ CỤC 2 CỘT SONG SONG: BÊN TRÁI LÀ SURVEY 3D, BÊN PHẢI LÀ HOẠT ĐỘNG CẬP NHẬT DDR
-    col_left, col_right = st.columns([0.58, 0.42])
+# KHỞI TẠO BỐ CỤC 2 CỘT SONG SONG: BÊN TRÁI LÀ SURVEY 3D, BÊN PHẢI LÀ HOẠT ĐỘNG CẬP NHẬT DDR
+col_left, col_right = st.columns([0.58, 0.42])
 
-    with col_left:
-        st.subheader(f"🌐 Quỹ đạo 3D & Mặt cắt Giếng: {selected_well_name}")
-        
-        # Tính toán Minimum Curvature cho cả Plan và Survey
-        df_plan = calculate_minimum_curvature(selected_well['plan_points'])
-        df_survey = calculate_minimum_curvature(selected_well['survey_points'])
+with col_left:
+    st.subheader(f"🌐 Quỹ đạo 3D & Mặt cắt Giếng: {selected_well_name}")
+    
+    # Tính toán Minimum Curvature cho cả Plan và Survey
+    df_plan = calculate_minimum_curvature(selected_well['plan_points'])
+    df_survey = calculate_minimum_curvature(selected_well['survey_points'])
 
-        # Khởi tạo Subplots 3 khung nhìn giống repo Github
-        fig = make_subplots(
-            rows=2, cols=2, column_widths=[0.55, 0.45], row_heights=[0.5, 0.5],
-            specs=[[{"type": "scene", "rowspan": 2}, {"type": "xy"}], [None, {"type": "xy"}]],
-            subplot_titles=("3D Wellbore Trajectory (Minimum Curvature)", "Plan View (Top-Down: East vs North)", "Profile View (Vertical: VS vs TVD)")
+    # Khởi tạo Subplots 3 khung nhìn giống repo Github
+    fig = make_subplots(
+        rows=2, cols=2, column_widths=[0.55, 0.45], row_heights=[0.5, 0.5],
+        specs=[[{"type": "scene", "rowspan": 2}, {"type": "xy"}], [None, {"type": "xy"}]],
+        subplot_titles=("3D Wellbore Trajectory (Minimum Curvature)", "Plan View (Top-Down: East vs North)", "Profile View (Vertical: VS vs TVD)")
+    )
+
+    # 1. 3D View (Bên trái)
+    # Trace Plan (Thiết kế - Nét đứt màu đen/xám)
+    if not df_plan.empty:
+        fig.add_trace(
+            go.Scatter3d(
+                x=df_plan['east'], y=df_plan['north'], z=df_plan['tvd'],
+                mode='lines',
+                line=dict(color='rgb(120, 120, 120)', width=4, dash='dash'),
+                name="Well Plan (Thiết kế)",
+                showlegend=True
+            ), row=1, col=1
         )
 
-        # 1. 3D View (Bên trái)
-        # Trace Plan (Thiết kế - Nét đứt màu đen/xám)
-        if not df_plan.empty:
-            fig.add_trace(
-                go.Scatter3d(
-                    x=df_plan['east'], y=df_plan['north'], z=df_plan['tvd'],
-                    mode='lines',
-                    line=dict(color='rgb(120, 120, 120)', width=4, dash='dash'),
-                    name="Well Plan (Thiết kế)",
-                    showlegend=True
-                ), row=1, col=1
-            )
-
-        # Trace Survey (Thực tế - Nét liền màu đỏ có marker)
-        if not df_survey.empty:
-            fig.add_trace(
-                go.Scatter3d(
-                    x=df_survey['east'], y=df_survey['north'], z=df_survey['tvd'],
-                    mode='lines+markers',
-                    marker=dict(size=4, color='rgb(220, 38, 38)'),
-                    line=dict(color='rgb(220, 38, 38)', width=6),
-                    name="Well Survey (Thực tế)",
-                    showlegend=True
-                ), row=1, col=1
-            )
-            # Điểm mũi khoan hiện tại (Bit Position)
-            last_pt = df_survey.iloc[-1]
-            fig.add_trace(
-                go.Scatter3d(
-                    x=[last_pt['east']], y=[last_pt['north']], z=[last_pt['tvd']],
-                    mode='markers+text',
-                    marker=dict(size=10, color='rgb(34, 197, 94)', symbol='diamond'),
-                    text=[f"Bit: {last_pt['md']}m"],
-                    textposition="top center",
-                    name="Vị trí Mũi Khoan Hiện Tại",
-                    showlegend=True
-                ), row=1, col=1
-            )
-
-        # 2. Plan View (Top-Down: East vs North)
-        if not df_plan.empty:
-            fig.add_trace(
-                go.Scatter(
-                    x=df_plan['east'], y=df_plan['north'],
-                    mode='lines',
-                    line=dict(color='rgb(120, 120, 120)', width=2, dash='dash'),
-                    name="Plan (Top-Down)",
-                    showlegend=False
-                ), row=1, col=2
-            )
-        if not df_survey.empty:
-            fig.add_trace(
-                go.Scatter(
-                    x=df_survey['east'], y=df_survey['north'],
-                    mode='lines+markers',
-                    marker=dict(size=4, color='rgb(220, 38, 38)'),
-                    line=dict(color='rgb(220, 38, 38)', width=3),
-                    name="Survey (Top-Down)",
-                    showlegend=False
-                ), row=1, col=2
-            )
-
-        # 3. Profile View (Vertical Section vs TVD)
-        if not df_plan.empty:
-            fig.add_trace(
-                go.Scatter(
-                    x=df_plan['vs_calculated'], y=df_plan['tvd'],
-                    mode='lines',
-                    line=dict(color='rgb(120, 120, 120)', width=2, dash='dash'),
-                    name="Plan (Profile)",
-                    showlegend=False
-                ), row=2, col=2
-            )
-        if not df_survey.empty:
-            fig.add_trace(
-                go.Scatter(
-                    x=df_survey['vs_calculated'], y=df_survey['tvd'],
-                    mode='lines+markers',
-                    marker=dict(size=4, color='rgb(220, 38, 38)'),
-                    line=dict(color='rgb(220, 38, 38)', width=3),
-                    name="Survey (Profile)",
-                    showlegend=False
-                ), row=2, col=2
-            )
-
-        # Cấu hình trục
-        fig.update_xaxes(title_text="Easting (m)", row=1, col=2)
-        fig.update_yaxes(title_text="Northing (m)", scaleanchor="x", scaleratio=1, row=1, col=2)
-        fig.update_xaxes(title_text="Vertical Section (m)", row=2, col=2)
-        fig.update_yaxes(title_text="TVD (m)", autorange='reversed', row=2, col=2)
-
-        fig.update_layout(
-            height=680,
-            margin=dict(l=10, r=10, t=35, b=10),
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-            scene=dict(
-                xaxis_title="East (m)", yaxis_title="North (m)", zaxis_title="TVD (m)",
-                zaxis=dict(autorange='reversed'), aspectmode='data',
-                camera=dict(eye=dict(x=1.6, y=1.6, z=0.6))
-            )
+    # Trace Survey (Thực tế - Nét liền màu đỏ có marker)
+    if not df_survey.empty:
+        fig.add_trace(
+            go.Scatter3d(
+                x=df_survey['east'], y=df_survey['north'], z=df_survey['tvd'],
+                mode='lines+markers',
+                marker=dict(size=4, color='rgb(220, 38, 38)'),
+                line=dict(color='rgb(220, 38, 38)', width=6),
+                name="Well Survey (Thực tế)",
+                showlegend=True
+            ), row=1, col=1
+        )
+        # Điểm mũi khoan hiện tại (Bit Position)
+        last_pt = df_survey.iloc[-1]
+        fig.add_trace(
+            go.Scatter3d(
+                x=[last_pt['east']], y=[last_pt['north']], z=[last_pt['tvd']],
+                mode='markers+text',
+                marker=dict(size=10, color='rgb(34, 197, 94)', symbol='diamond'),
+                text=[f"Bit: {last_pt['md']}m"],
+                textposition="top center",
+                name="Vị trí Mũi Khoan Hiện Tại",
+                showlegend=True
+            ), row=1, col=1
         )
 
-        st.plotly_chart(fig, use_container_width=True)
+    # 2. Plan View (Top-Down: East vs North)
+    if not df_plan.empty:
+        fig.add_trace(
+            go.Scatter(
+                x=df_plan['east'], y=df_plan['north'],
+                mode='lines',
+                line=dict(color='rgb(120, 120, 120)', width=2, dash='dash'),
+                name="Plan (Top-Down)",
+                showlegend=False
+            ), row=1, col=2
+        )
+    if not df_survey.empty:
+        fig.add_trace(
+            go.Scatter(
+                x=df_survey['east'], y=df_survey['north'],
+                mode='lines+markers',
+                marker=dict(size=4, color='rgb(220, 38, 38)'),
+                line=dict(color='rgb(220, 38, 38)', width=3),
+                name="Survey (Top-Down)",
+                showlegend=False
+            ), row=1, col=2
+        )
 
-        # Bảng trạm đo gần nhất
-        with st.expander("📋 Bảng số liệu Survey thực tế (Trạm đo gần nhất)"):
-            st.dataframe(df_survey[['md', 'inc', 'azi', 'tvd', 'north', 'east', 'vs_calculated', 'dls']].tail(6), use_container_width=True)
+    # 3. Profile View (Vertical Section vs TVD)
+    if not df_plan.empty:
+        fig.add_trace(
+            go.Scatter(
+                x=df_plan['vs_calculated'], y=df_plan['tvd'],
+                mode='lines',
+                line=dict(color='rgb(120, 120, 120)', width=2, dash='dash'),
+                name="Plan (Profile)",
+                showlegend=False
+            ), row=2, col=2
+        )
+    if not df_survey.empty:
+        fig.add_trace(
+            go.Scatter(
+                x=df_survey['vs_calculated'], y=df_survey['tvd'],
+                mode='lines+markers',
+                marker=dict(size=4, color='rgb(220, 38, 38)'),
+                line=dict(color='rgb(220, 38, 38)', width=3),
+                name="Survey (Profile)",
+                showlegend=False
+            ), row=2, col=2
+        )
 
-    with col_right:
-        st.subheader(f"📝 Hoạt Động Giếng Khoan (Cập nhật lúc {selected_well['last_update']})")
+    # Cấu hình trục
+    fig.update_xaxes(title_text="Easting (m)", row=1, col=2)
+    fig.update_yaxes(title_text="Northing (m)", scaleanchor="x", scaleratio=1, row=1, col=2)
+    fig.update_xaxes(title_text="Vertical Section (m)", row=2, col=2)
+    fig.update_yaxes(title_text="TVD (m)", autorange='reversed', row=2, col=2)
 
-        # Tab phân tách các nội dung DDR
-        tab_act, tab_fc, tab_npt, tab_params = st.tabs(["📋 Hoạt động 24h qua", "🔮 Kế hoạch 24h tới", "⚠️ Báo cáo NPT", "⚙️ Thông số Khoan & BHA"])
+    fig.update_layout(
+        height=680,
+        margin=dict(l=10, r=10, t=35, b=10),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        scene=dict(
+            xaxis_title="East (m)", yaxis_title="North (m)", zaxis_title="TVD (m)",
+            zaxis=dict(autorange='reversed'), aspectmode='data',
+            camera=dict(eye=dict(x=1.6, y=1.6, z=0.6))
+        )
+    )
 
-        with tab_act:
+    st.plotly_chart(fig, use_container_width=True)
+
+    # Bảng trạm đo gần nhất
+    with st.expander("📋 Bảng số liệu Survey thực tế (Trạm đo gần nhất)"):
+        st.dataframe(df_survey[['md', 'inc', 'azi', 'tvd', 'north', 'east', 'vs_calculated', 'dls']].tail(6), use_container_width=True)
+
+with col_right:
+    st.subheader(f"📝 Hoạt Động Giếng Khoan (Cập nhật lúc {selected_well['last_update']})")
+
+    # Tab phân tách các nội dung DDR
+    tab_act, tab_fc, tab_npt, tab_params = st.tabs(["📋 Hoạt động 24h qua", "🔮 Kế hoạch 24h tới", "⚠️ Báo cáo NPT", "⚙️ Thông số Khoan & BHA"])
+
+    with tab_act:
+        st.markdown(f"""
+        <div style="background-color: #f1f5f9; padding: 14px; border-radius: 8px; border-left: 4px solid #0284c7; margin-bottom: 12px;">
+            <strong style="color: #0369a1;">📌 Tóm tắt 24h (Activity last 24h Summary):</strong>
+            <p style="margin: 6px 0 0 0; color: #1e293b; font-size: 14px; line-height: 1.5;">{selected_well['activity_24h_summary']}</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.write("**Chi tiết nhật ký hoạt động theo giờ (00:00 - 24:00):**")
+        log_data = selected_well.get('operations_log', [])
+        if log_data:
+            for item in log_data:
+                st.markdown(f"- **`{item.get('time', '')}`** ({item.get('hours', 0)}h): {item.get('desc', '')}")
+        else:
+            st.info("Chưa có nhật ký phân rã theo giờ.")
+
+    with tab_fc:
+        st.markdown(f"""
+        <div style="background-color: #ecfdf5; padding: 14px; border-radius: 8px; border-left: 4px solid #10b981; margin-bottom: 12px;">
+            <strong style="color: #047857;">🎯 Kế hoạch 24 giờ tới (24h Forecast):</strong>
+            <p style="margin: 6px 0 0 0; color: #064e3b; font-size: 14px; line-height: 1.5;">{selected_well['forecast_24h']}</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with tab_npt:
+        npt_h = selected_well['npt_hours']
+        if npt_h > 0:
+            st.error(f"⚠️ Phát hiện {npt_h} giờ NPT (Non-Productive Time) trong 24h qua!")
             st.markdown(f"""
-            <div style="background-color: #f1f5f9; padding: 14px; border-radius: 8px; border-left: 4px solid #0284c7; margin-bottom: 12px;">
-                <strong style="color: #0369a1;">📌 Tóm tắt 24h (Activity last 24h Summary):</strong>
-                <p style="margin: 6px 0 0 0; color: #1e293b; font-size: 14px; line-height: 1.5;">{selected_well['activity_24h_summary']}</p>
+            <div style="background-color: #fef2f2; padding: 14px; border-radius: 8px; border-left: 4px solid #ef4444; margin-bottom: 12px;">
+                <strong style="color: #b91c1c;">Phân tích nguyên nhân sự cố:</strong>
+                <p style="margin: 6px 0 0 0; color: #7f1d1d; font-size: 14px;">{selected_well['npt_summary']}</p>
             </div>
             """, unsafe_allow_html=True)
+        else:
+            st.success("✅ Tuyệt vời! Không ghi nhận thời gian gián đoạn NPT (NPT = 0 giờ). Hoạt động đạt 100% hiệu suất kế hoạch.")
 
-            st.write("**Chi tiết nhật ký hoạt động theo giờ (00:00 - 24:00):**")
-            log_data = selected_well.get('operations_log', [])
-            if log_data:
-                for item in log_data:
-                    st.markdown(f"- **`{item.get('time', '')}`** ({item.get('hours', 0)}h): {item.get('desc', '')}")
-            else:
-                st.info("Chưa có nhật ký phân rã theo giờ.")
+    with tab_params:
+        st.write("**Thông số kỹ thuật vận hành:**")
+        p_c1, p_c2 = st.columns(2)
+        with p_c1:
+            st.write(f"- **Kích thước lỗ giếng:** `{selected_well['hole_size']}`")
+            st.write(f"- **Mũi khoan:** `{selected_well['bit_type']}`")
+            st.write(f"- **Tốc độ ROP:** `{selected_well['rop']}`")
+        with p_c2:
+            st.write(f"- **Hệ dung dịch:** `{selected_well['mud_weight']}`")
+            st.write(f"- **Lưu lượng bơm:** `{selected_well['flow_rate']}`")
+            st.write(f"- **Áp suất SPP:** `{selected_well['spp']}`")
 
-        with tab_fc:
-            st.markdown(f"""
-            <div style="background-color: #ecfdf5; padding: 14px; border-radius: 8px; border-left: 4px solid #10b981; margin-bottom: 12px;">
-                <strong style="color: #047857;">🎯 Kế hoạch 24 giờ tới (24h Forecast):</strong>
-                <p style="margin: 6px 0 0 0; color: #064e3b; font-size: 14px; line-height: 1.5;">{selected_well['forecast_24h']}</p>
-            </div>
-            """, unsafe_allow_html=True)
-
-        with tab_npt:
-            npt_h = selected_well['npt_hours']
-            if npt_h > 0:
-                st.error(f"⚠️ Phát hiện {npt_h} giờ NPT (Non-Productive Time) trong 24h qua!")
-                st.markdown(f"""
-                <div style="background-color: #fef2f2; padding: 14px; border-radius: 8px; border-left: 4px solid #ef4444; margin-bottom: 12px;">
-                    <strong style="color: #b91c1c;">Phân tích nguyên nhân sự cố:</strong>
-                    <p style="margin: 6px 0 0 0; color: #7f1d1d; font-size: 14px;">{selected_well['npt_summary']}</p>
-                </div>
-                """, unsafe_allow_html=True)
-            else:
-                st.success("✅ Tuyệt vời! Không ghi nhận thời gian gián đoạn NPT (NPT = 0 giờ). Hoạt động đạt 100% hiệu suất kế hoạch.")
-
-        with tab_params:
-            st.write("**Thông số kỹ thuật vận hành:**")
-            p_c1, p_c2 = st.columns(2)
-            with p_c1:
-                st.write(f"- **Kích thước lỗ giếng:** `{selected_well['hole_size']}`")
-                st.write(f"- **Mũi khoan:** `{selected_well['bit_type']}`")
-                st.write(f"- **Tốc độ ROP:** `{selected_well['rop']}`")
-            with p_c2:
-                st.write(f"- **Hệ dung dịch:** `{selected_well['mud_weight']}`")
-                st.write(f"- **Lưu lượng bơm:** `{selected_well['flow_rate']}`")
-                st.write(f"- **Áp suất SPP:** `{selected_well['spp']}`")
-
-        # Nút chuyển sang nạp DDR cho giếng này
-        st.markdown("---")
-        st.write(f"Cập nhật thông tin mới nhất cho giếng **{selected_well_name}**?")
-        if st.button("📤 Tải lên Báo Cáo DDR mới cho giếng này"):
-            st.session_state["target_well_upload"] = selected_well_name
-            st.info("Vui lòng chuyển qua mục **'Nạp Báo Cáo DDR (PDF / AI)'** ở thanh bên trái.")
+    # Nút chuyển sang nạp DDR cho giếng này
+    st.markdown("---")
+    st.write(f"Cập nhật thông tin mới nhất cho giếng **{selected_well_name}**?")
+    if st.button("📤 Tải lên Báo Cáo DDR mới cho giếng này"):
+        st.session_state["target_well_upload"] = selected_well_name
+        st.info("Vui lòng chuyển qua mục **'Nạp Báo Cáo DDR (PDF / AI)'** ở thanh bên trái.")
 
 
 # ==========================================
 # 6. MÀN HÌNH 2: TỔNG QUAN ĐỘI GIÀN KHOAN (MULTI-WELL 3D & MATRIX)
 # ==========================================
 elif view_mode == "Tổng quan Đội giàn (Multi-Well 3D)":
-    st.subheader("🌐 Mô Hình Quỹ Đạo Đồng Thời 8 - 10 Giếng Khoan (Field Multi-Well 3D)")
-    st.write("Quan sát vị trí không gian ngầm, đánh giá va chạm quỹ đạo (Anti-Collision) và theo dõi tiến độ toàn cụm giàn khoan.")
+st.subheader("🌐 Mô Hình Quỹ Đạo Đồng Thời 8 - 10 Giếng Khoan (Field Multi-Well 3D)")
+st.write("Quan sát vị trí không gian ngầm, đánh giá va chạm quỹ đạo (Anti-Collision) và theo dõi tiến độ toàn cụm giàn khoan.")
 
-    fig_multi = go.Figure()
-    colors = ['#2563eb', '#dc2626', '#16a34a', '#d97706', '#9333ea', '#0891b2', '#e11d48', '#4f46e5']
+fig_multi = go.Figure()
+colors = ['#2563eb', '#dc2626', '#16a34a', '#d97706', '#9333ea', '#0891b2', '#e11d48', '#4f46e5']
 
-    for idx, (w_name, w_data) in enumerate(wells_db.items()):
-        color = colors[idx % len(colors)]
-        df_w = calculate_minimum_curvature(w_data['survey_points'])
-        if not df_w.empty:
-            fig_multi.add_trace(
-                go.Scatter3d(
-                    x=df_w['east'], y=df_w['north'], z=df_w['tvd'],
-                    mode='lines+markers',
-                    marker=dict(size=3, color=color),
-                    line=dict(color=color, width=5),
-                    name=f"{w_name} ({w_data['rig']})"
-                )
+for idx, (w_name, w_data) in enumerate(wells_db.items()):
+    color = colors[idx % len(colors)]
+    df_w = calculate_minimum_curvature(w_data['survey_points'])
+    if not df_w.empty:
+        fig_multi.add_trace(
+            go.Scatter3d(
+                x=df_w['east'], y=df_w['north'], z=df_w['tvd'],
+                mode='lines+markers',
+                marker=dict(size=3, color=color),
+                line=dict(color=color, width=5),
+                name=f"{w_name} ({w_data['rig']})"
             )
-            # Vị trí mũi khoan
-            last_p = df_w.iloc[-1]
-            fig_multi.add_trace(
-                go.Scatter3d(
-                    x=[last_p['east']], y=[last_p['north']], z=[last_p['tvd']],
-                    mode='markers+text',
-                    marker=dict(size=7, color=color, symbol='diamond'),
-                    text=[f"{w_name}: {last_p['md']}m"],
-                    textposition="top center",
-                    showlegend=False
-                )
+        )
+        # Vị trí mũi khoan
+        last_p = df_w.iloc[-1]
+        fig_multi.add_trace(
+            go.Scatter3d(
+                x=[last_p['east']], y=[last_p['north']], z=[last_p['tvd']],
+                mode='markers+text',
+                marker=dict(size=7, color=color, symbol='diamond'),
+                text=[f"{w_name}: {last_p['md']}m"],
+                textposition="top center",
+                showlegend=False
             )
+        )
 
-    fig_multi.update_layout(
-        height=720,
-        scene=dict(
-            xaxis_title="Easting (m)", yaxis_title="Northing (m)", zaxis_title="TVD (m)",
-            zaxis=dict(autorange='reversed'), aspectmode='data',
-            camera=dict(eye=dict(x=1.8, y=1.8, z=0.8))
-        ),
-        legend=dict(yanchor="top", y=0.98, xanchor="left", x=1.02)
-    )
-    st.plotly_chart(fig_multi, use_container_width=True)
+fig_multi.update_layout(
+    height=720,
+    scene=dict(
+        xaxis_title="Easting (m)", yaxis_title="Northing (m)", zaxis_title="TVD (m)",
+        zaxis=dict(autorange='reversed'), aspectmode='data',
+        camera=dict(eye=dict(x=1.8, y=1.8, z=0.8))
+    ),
+    legend=dict(yanchor="top", y=0.98, xanchor="left", x=1.02)
+)
+st.plotly_chart(fig_multi, use_container_width=True)
 
-    st.subheader("📊 Ma Trận Tiến Độ 8 - 10 Giếng Khoan Đang Thi Công")
-    matrix_rows = []
-    for w_name, w_data in wells_db.items():
-        pct = round((w_data['current_md'] / w_data['target_depth']) * 100, 1)
-        matrix_rows.append({
-            "Tên Giếng": w_name,
-            "Giàn Khoan": w_data['rig'],
-            "Mỏ / Bể Trầm Tích": w_data['field'],
-            "Trạng Thái Hiện Tại": w_data['status'],
-            "Độ sâu MD (m)": w_data['current_md'],
-            "Mục tiêu TD (m)": w_data['target_depth'],
-            "Tiến độ (%)": f"{pct}%",
-            "NPT 24h (h)": w_data['npt_hours'],
-            "Cập nhật lúc": w_data['last_update']
-        })
-    df_matrix = pd.DataFrame(matrix_rows)
-    st.dataframe(df_matrix, use_container_width=True)
+st.subheader("📊 Ma Trận Tiến Độ 8 - 10 Giếng Khoan Đang Thi Công")
+matrix_rows = []
+for w_name, w_data in wells_db.items():
+    pct = round((w_data['current_md'] / w_data['target_depth']) * 100, 1)
+    matrix_rows.append({
+        "Tên Giếng": w_name,
+        "Giàn Khoan": w_data['rig'],
+        "Mỏ / Bể Trầm Tích": w_data['field'],
+        "Trạng Thái Hiện Tại": w_data['status'],
+        "Độ sâu MD (m)": w_data['current_md'],
+        "Mục tiêu TD (m)": w_data['target_depth'],
+        "Tiến độ (%)": f"{pct}%",
+        "NPT 24h (h)": w_data['npt_hours'],
+        "Cập nhật lúc": w_data['last_update']
+    })
+df_matrix = pd.DataFrame(matrix_rows)
+st.dataframe(df_matrix, use_container_width=True)
 
 
 # ==========================================
 # 7. MÀN HÌNH 3: NẠP BÁO CÁO DDR (PDF / TRÍCH XUẤT AI GEMINI)
 # ==========================================
 elif view_mode == "Nạp Báo Cáo DDR (PDF / AI)":
-    st.subheader("📄 Bóc Tách Tự Động Báo Cáo Khoan Hàng Ngày (DDR PDF Extractor)")
-    st.write("Sử dụng AI để tự động đọc tài liệu PDF báo cáo DDR, trích xuất súc tích: **Activity last 24h Summary**, **24h Forecast**, **NPT**, và các thông số khoan cốt lõi.")
+st.subheader("📄 Bóc Tách Tự Động Báo Cáo Khoan Hàng Ngày (DDR PDF Extractor)")
+st.write("Sử dụng AI để tự động đọc tài liệu PDF báo cáo DDR, trích xuất súc tích: **Activity last 24h Summary**, **24h Forecast**, **NPT**, và các thông số khoan cốt lõi.")
 
-    target_well_for_ddr = st.selectbox("Chọn giếng cần cập nhật dữ liệu:", well_names, index=0)
+target_well_for_ddr = st.selectbox("Chọn giếng cần cập nhật dữ liệu:", well_names, index=0)
 
-    ddr_file = st.file_uploader("Kéo và thả file Báo cáo Khoan DDR (.pdf hoặc .txt) vào đây:", type=["pdf", "txt"])
-    
-    st.write("Hoặc dán trực tiếp đoạn văn bản nội dung DDR vào đây:")
-    ddr_text_input = st.text_area("Nội dung báo cáo khoan DDR:", height=180, placeholder="Ví dụ: Well DH-01X, Rig PV DRILLING I, Date: 2026-10-14...\n00:00 - 06:00: Drilling 12-1/4\" hole from 2750m to 2840m...\n24h Forecast: Continue drilling 12-1/4\" hole to 3100m, circulate bottoms up and POOH for 9-5/8\" casing...\nNPT: 0 hrs...")
+ddr_file = st.file_uploader("Kéo và thả file Báo cáo Khoan DDR (.pdf hoặc .txt) vào đây:", type=["pdf", "txt"])
 
-    if st.button("🤖 Phân Tích & Bóc Tách Bằng AI", type="primary"):
-        if not ddr_file and not ddr_text_input:
-            st.warning("Vui lòng tải lên file PDF hoặc nhập nội dung văn bản báo cáo.")
-        else:
-            with st.spinner("AI đang đọc báo cáo khoan, nhận diện phân ca, trích xuất 24h Summary, Forecast và NPT..."):
-                # Mô phỏng / Gọi API bóc tách AI
-                extracted_sample = {
-                    "wellName": target_well_for_ddr,
-                    "reportDate": "2026-10-14",
-                    "currentDepthMd": 2895,
-                    "currentDepthTvd": 2665,
-                    "holeSize": "12-1/4\"",
-                    "activityLast24hSummary": "Đã khoan từ 2,840m đến 2,895m MD. Cắt qua tầng cát kết mỏng có biểu hiện dầu khí huỳnh quang 40%. Bơm dung dịch nặng kiểm soát vỉa. Thực hiện đo survey góc nghiêng Inc 32.1°, Azi 145.8°.",
-                    "forecastNext24h": "Tiếp tục khoan lỗ 12-1/4\" đến chiều sâu thiết kế 3,100m MD. Tuần hoàn sạch đáy giếng và kéo cần để chuẩn bị thả ống chống 9-5/8\".",
-                    "nptHours": 0.0,
-                    "nptSummary": "Không có NPT trong 24h qua.",
-                    "operationsLog": [
-                        {"time": "00:00 - 08:00", "hours": 8.0, "desc": "Khoan từ 2840m đến 2868m MD với WOB 18 klbs, RPM 115."},
-                        {"time": "08:00 - 18:00", "hours": 10.0, "desc": "Khoan từ 2868m đến 2895m MD. Gặp vỉa áp suất tăng nhẹ, bổ sung Barite."},
-                        {"time": "18:00 - 24:00", "hours": 6.0, "desc": "Tuần hoàn dung dịch 1.30 SG, chuẩn bị nối cần khoan tiếp theo."}
-                    ]
-                }
+st.write("Hoặc dán trực tiếp đoạn văn bản nội dung DDR vào đây:")
+ddr_text_input = st.text_area("Nội dung báo cáo khoan DDR:", height=180, placeholder="Ví dụ: Well DH-01X, Rig PV DRILLING I, Date: 2026-10-14...\n00:00 - 06:00: Drilling 12-1/4\" hole from 2750m to 2840m...\n24h Forecast: Continue drilling 12-1/4\" hole to 3100m, circulate bottoms up and POOH for 9-5/8\" casing...\nNPT: 0 hrs...")
+
+if st.button("🤖 Phân Tích & Bóc Tách Bằng AI", type="primary"):
+    if not ddr_file and not ddr_text_input:
+        st.warning("Vui lòng tải lên file PDF hoặc nhập nội dung văn bản báo cáo.")
+    else:
+        with st.spinner("AI đang đọc báo cáo khoan, nhận diện phân ca, trích xuất 24h Summary, Forecast và NPT..."):
+            # Mô phỏng / Gọi API bóc tách AI
+            extracted_sample = {
+                "wellName": target_well_for_ddr,
+                "reportDate": "2026-10-14",
+                "currentDepthMd": 2895,
+                "currentDepthTvd": 2665,
+                "holeSize": "12-1/4\"",
+                "activityLast24hSummary": "Đã khoan từ 2,840m đến 2,895m MD. Cắt qua tầng cát kết mỏng có biểu hiện dầu khí huỳnh quang 40%. Bơm dung dịch nặng kiểm soát vỉa. Thực hiện đo survey góc nghiêng Inc 32.1°, Azi 145.8°.",
+                "forecastNext24h": "Tiếp tục khoan lỗ 12-1/4\" đến chiều sâu thiết kế 3,100m MD. Tuần hoàn sạch đáy giếng và kéo cần để chuẩn bị thả ống chống 9-5/8\".",
+                "nptHours": 0.0,
+                "nptSummary": "Không có NPT trong 24h qua.",
+                "operationsLog": [
+                    {"time": "00:00 - 08:00", "hours": 8.0, "desc": "Khoan từ 2840m đến 2868m MD với WOB 18 klbs, RPM 115."},
+                    {"time": "08:00 - 18:00", "hours": 10.0, "desc": "Khoan từ 2868m đến 2895m MD. Gặp vỉa áp suất tăng nhẹ, bổ sung Barite."},
+                    {"time": "18:00 - 24:00", "hours": 6.0, "desc": "Tuần hoàn dung dịch 1.30 SG, chuẩn bị nối cần khoan tiếp theo."}
+                ]
+            }
+            
+            st.success("✓ Đã trích xuất thành công dữ liệu từ báo cáo DDR!")
+            st.json(extracted_sample)
+
+            if st.button("💾 Cập nhật ngay vào dữ liệu giếng"):
+                w = wells_db[target_well_for_ddr]
+                w['current_md'] = extracted_sample['currentDepthMd']
+                w['current_tvd'] = extracted_sample['currentDepthTvd']
+                w['activity_24h_summary'] = extracted_sample['activityLast24hSummary']
+                w['forecast_24h'] = extracted_sample['forecastNext24h']
+                w['npt_hours'] = extracted_sample['nptHours']
+                w['npt_summary'] = extracted_sample['nptSummary']
+                w['operations_log'] = extracted_sample['operationsLog']
+                w['last_update'] = f"{extracted_sample['reportDate']} 24:00"
                 
-                st.success("✓ Đã trích xuất thành công dữ liệu từ báo cáo DDR!")
-                st.json(extracted_sample)
-
-                if st.button("💾 Cập nhật ngay vào dữ liệu giếng"):
-                    w = wells_db[target_well_for_ddr]
-                    w['current_md'] = extracted_sample['currentDepthMd']
-                    w['current_tvd'] = extracted_sample['currentDepthTvd']
-                    w['activity_24h_summary'] = extracted_sample['activityLast24hSummary']
-                    w['forecast_24h'] = extracted_sample['forecastNext24h']
-                    w['npt_hours'] = extracted_sample['nptHours']
-                    w['npt_summary'] = extracted_sample['nptSummary']
-                    w['operations_log'] = extracted_sample['operationsLog']
-                    w['last_update'] = f"{extracted_sample['reportDate']} 24:00"
-                    
-                    # Thêm trạm survey mới vào trajectory
-                    w['survey_points'].append({
-                        "md": extracted_sample['currentDepthMd'],
-                        "inc": 32.1,
-                        "azi": 145.8
-                    })
-                    st.success(f"✓ Đã cập nhật thành công cho {target_well_for_ddr}!")
+                # Thêm trạm survey mới vào trajectory
+                w['survey_points'].append({
+                    "md": extracted_sample['currentDepthMd'],
+                    "inc": 32.1,
+                    "azi": 145.8
+                })
+                st.success(f"✓ Đã cập nhật thành công cho {target_well_for_ddr}!")
 
 
 # ==========================================
 # 8. MÀN HÌNH 4: NẠP SURVEY EXCEL CHO TỪNG GIẾNG
 # ==========================================
 elif view_mode == "Nạp Survey Excel (.xlsx)":
-    st.subheader("📊 Nạp Dữ Liệu Quỹ Đạo Survey Từ File Excel (.xlsx / .xlsm)")
-    st.write("Hỗ trợ tự động bóc tách 2 sheet riêng biệt (Plan & Survey) với thuật toán tự động nhận diện cột linh hoạt (MD, INC, AZI).")
+st.subheader("📊 Nạp Dữ Liệu Quỹ Đạo Survey Từ File Excel (.xlsx / .xlsm)")
+st.write("Hỗ trợ tự động bóc tách 2 sheet riêng biệt (Plan & Survey) với thuật toán tự động nhận diện cột linh hoạt (MD, INC, AZI).")
 
-    target_well_for_excel = st.selectbox("Chọn giếng cần nạp Survey:", well_names, index=0)
+target_well_for_excel = st.selectbox("Chọn giếng cần nạp Survey:", well_names, index=0)
 
-    uploaded_excel = st.file_uploader("Kéo và thả file Excel (.xlsx / .xlsm) vào đây:", type=["xlsx", "xlsm"])
+uploaded_excel = st.file_uploader("Kéo và thả file Excel (.xlsx / .xlsm) vào đây:", type=["xlsx", "xlsm"])
 
-    if uploaded_excel is not None:
-        try:
-            xl = pd.ExcelFile(uploaded_excel)
-            sheet_names = xl.sheet_names
-            
-            plan_sheet = None
-            survey_sheet = None
-            
-            for sheet in sheet_names:
-                low_sheet = sheet.lower()
-                if 'plan' in low_sheet:
-                    plan_sheet = sheet
-                elif 'survey' in low_sheet or 'actual' in low_sheet or 'data' in low_sheet or 'sheet1' in low_sheet:
-                    survey_sheet = sheet
-                    
-            if not plan_sheet and len(sheet_names) > 0: plan_sheet = sheet_names[0]
-            if not survey_sheet and len(sheet_names) > 1: survey_sheet = sheet_names[1]
-            elif not survey_sheet and len(sheet_names) == 1: survey_sheet = sheet_names[0]
+if uploaded_excel is not None:
+    try:
+        xl = pd.ExcelFile(uploaded_excel)
+        sheet_names = xl.sheet_names
+        
+        plan_sheet = None
+        survey_sheet = None
+        
+        for sheet in sheet_names:
+            low_sheet = sheet.lower()
+            if 'plan' in low_sheet:
+                plan_sheet = sheet
+            elif 'survey' in low_sheet or 'actual' in low_sheet or 'data' in low_sheet or 'sheet1' in low_sheet:
+                survey_sheet = sheet
+                
+        if not plan_sheet and len(sheet_names) > 0: plan_sheet = sheet_names[0]
+        if not survey_sheet and len(sheet_names) > 1: survey_sheet = sheet_names[1]
+        elif not survey_sheet and len(sheet_names) == 1: survey_sheet = sheet_names[0]
 
-            col_p, col_s = st.columns(2)
-            plan_data = None
-            survey_data = None
+        col_p, col_s = st.columns(2)
+        plan_data = None
+        survey_data = None
 
-            if plan_sheet:
-                plan_data = clean_well_sheet(uploaded_excel, plan_sheet)
-                with col_p:
-                    st.success(f"Sheet Thiết kế (Plan): **{plan_sheet}**")
-                    if plan_data:
-                        st.dataframe(pd.DataFrame(plan_data).head(5))
+        if plan_sheet:
+            plan_data = clean_well_sheet(uploaded_excel, plan_sheet)
+            with col_p:
+                st.success(f"Sheet Thiết kế (Plan): **{plan_sheet}**")
+                if plan_data:
+                    st.dataframe(pd.DataFrame(plan_data).head(5))
 
-            if survey_sheet:
-                survey_data = clean_well_sheet(uploaded_excel, survey_sheet)
-                with col_s:
-                    st.success(f"Sheet Thực tế (Survey): **{survey_sheet}**")
-                    if survey_data:
-                        st.dataframe(pd.DataFrame(survey_data).head(5))
+        if survey_sheet:
+            survey_data = clean_well_sheet(uploaded_excel, survey_sheet)
+            with col_s:
+                st.success(f"Sheet Thực tế (Survey): **{survey_sheet}**")
+                if survey_data:
+                    st.dataframe(pd.DataFrame(survey_data).head(5))
 
-            if plan_data or survey_data:
-                if st.button("💾 Ghi đè vào cơ sở dữ liệu giếng hiện hành", type="primary"):
-                    if plan_data:
-                        wells_db[target_well_for_excel]['plan_points'] = plan_data
-                    if survey_data:
-                        wells_db[target_well_for_excel]['survey_points'] = survey_data
-                        last_p = survey_data[-1]
-                        wells_db[target_well_for_excel]['current_md'] = last_p.get('md', wells_db[target_well_for_excel]['current_md'])
-                    st.success(f"✓ Đã nạp thành công dữ liệu Survey cho {target_well_for_excel}!")
-        except Exception as e:
-            st.error(f"Lỗi phân tích file Excel: {e}")
+        if plan_data or survey_data:
+            if st.button("💾 Ghi đè vào cơ sở dữ liệu giếng hiện hành", type="primary"):
+                if plan_data:
+                    wells_db[target_well_for_excel]['plan_points'] = plan_data
+                if survey_data:
+                    wells_db[target_well_for_excel]['survey_points'] = survey_data
+                    last_p = survey_data[-1]
+                    wells_db[target_well_for_excel]['current_md'] = last_p.get('md', wells_db[target_well_for_excel]['current_md'])
+                st.success(f"✓ Đã nạp thành công dữ liệu Survey cho {target_well_for_excel}!")
+    except Exception as e:
+        st.error(f"Lỗi phân tích file Excel: {e}")
 
 # Footer
 st.markdown("---")
