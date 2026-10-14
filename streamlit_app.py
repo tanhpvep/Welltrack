@@ -590,20 +590,34 @@ status_colors = {
 st.sidebar.info(f"**Giàn:** {selected_well['rig']}\n\n**Lô:** {selected_well.get('block', 'Lô 15-1')}\n\n**Bể:** {selected_well.get('basin', 'Bể Cửu Long')}\n\n**Mỏ:** {selected_well['field']}\n\n**Trạng thái:** {status_colors.get(selected_well['status'], '⚪')} {selected_well['status']}\n\n**Cập nhật:** {selected_well['last_update']}")
 
 # Khung chỉnh sửa và thêm giếng độc lập
-with st.sidebar.expander("✏️ Chỉnh sửa / Thêm Giếng Mới"):
-    st.write("**Sửa thông tin giếng hiện tại:**")
-    edit_name = st.text_input("Tên giếng:", value=selected_well['name'], key="edit_name")
-    edit_rig = st.text_input("Giàn khoan:", value=selected_well['rig'], key="edit_rig")
+with st.sidebar.expander("📝 Chỉnh sửa / Thêm Giếng Mới"):
+    st.write("**✏️ Sửa thông tin giếng hiện tại:**")
+    edit_name = st.text_input("Tên giếng:", value=selected_well_name, key="edit_name")
+    edit_rig = st.text_input("Giàn Khoan:", value=st.session_state["wells_db"][selected_well_name].get('rig', ''), key="edit_rig")
     edit_block = st.text_input("Số Lô:", value=selected_well.get('block', 'Lô 15-1'), key="edit_block")
-    edit_basin = st.selectbox("Bể trầm tích:", ["Bể Cửu Long", "Bể Nam Côn Sơn", "Bể Sông Hồng", "Bể Malay - Thổ Chu", "Bể Phú Khánh", "Khác"], index=0, key="edit_basin")
+    
+    basin_options = ["Bể Cửu Long", "Bể Nam Côn Sơn", "Bể Sông Hồng", "Bể Malay - Thổ Chu", "Bể Phú Khánh", "Khác"]
+    default_basin_idx = basin_options.index(selected_well['basin']) if selected_well['basin'] in basin_options else 0
+    edit_basin = st.selectbox("Bể trầm tích:", basin_options, index=default_basin_idx, key="edit_basin")
+    
     edit_field = st.text_input("Mỏ / Cấu tạo:", value=selected_well.get('field', ''), key="edit_field")
 
     if st.button("💾 Lưu thay đổi thông tin giếng", key="btn_save_well"):
-        selected_well['name'] = edit_name
-        selected_well['rig'] = edit_rig
-        selected_well['block'] = edit_block
-        selected_well['basin'] = edit_basin
-        selected_well['field'] = edit_field
+        if edit_name != selected_well_name:
+            # Đổi Key định danh trong Dictionary tổng của Session State
+            st.session_state["wells_db"][edit_name] = st.session_state["wells_db"].pop(selected_well_name)
+            st.query_params["well"] = edit_name
+            current_key = edit_name
+        else:
+            current_key = selected_well_name
+            
+        # Cập nhật thông tin chi tiết vào Session State
+        st.session_state["wells_db"][current_key]['name'] = edit_name
+        st.session_state["wells_db"][current_key]['rig'] = edit_rig
+        st.session_state["wells_db"][current_key]['block'] = edit_block
+        st.session_state["wells_db"][current_key]['basin'] = edit_basin
+        st.session_state["wells_db"][current_key]['field'] = edit_field
+        
         st.success("✓ Đã cập nhật thông tin giếng thành công!")
         st.rerun()
 
@@ -612,40 +626,47 @@ with st.sidebar.expander("✏️ Chỉnh sửa / Thêm Giếng Mới"):
     new_w_name = st.text_input("Tên giếng mới:", placeholder="Ví dụ: Well 15-1/05-LD-1X", key="new_w_name")
     new_w_rig = st.text_input("Giàn khoan mới:", placeholder="Ví dụ: PV DRILLING I", key="new_w_rig")
     new_w_block = st.text_input("Số Lô:", placeholder="Ví dụ: Lô 15-1/05", key="new_w_block")
-    new_w_basin = st.selectbox("Bể:", ["Bể Cửu Long", "Bể Nam Côn Sơn", "Bể Sông Hồng", "Bể Malay - Thổ Chu", "Bể Phú Khánh"], key="new_w_basin")
+    new_w_basin = st.selectbox("Bể:", ["Bể Cửu Long", "Bể Nam Côn Sơn", "Bể Sông Hồng", "Bể Malay - Thổ Chu", "Bể Phú Khánh", "Khác"], key="new_w_basin")
     new_w_td = st.number_input("Chiều sâu thiết kế TD (m):", min_value=500, max_value=8000, value=3800, key="new_w_td")
 
     if st.button("➕ Tạo giếng độc lập mới", key="btn_add_well"):
         if new_w_name.strip():
             w_id = new_w_name.strip()
-            wells_db[w_id] = {
-                "name": w_id,
-                "rig": new_w_rig.strip() or "PV DRILLING",
-                "block": new_w_block.strip() or "Chưa xác định",
-                "basin": new_w_basin,
-                "field": new_w_name.strip(),
-                "status": "Active Drilling",
-                "target_depth": new_w_td,
-                "current_md": 1200,
-                "current_tvd": 1150,
-                "hole_size": "12-1/4\"",
-                "bit_type": "PDC",
-                "mud_weight": "1.25 SG",
-                "flow_rate": "750 GPM",
-                "spp": "2800 psi",
-                "rop": "14.0 m/h",
-                "last_update": "2026-10-14 06:00",
-                "activity_24h_summary": "Bắt đầu triển khai khoan tạo vỉa theo kế hoạch thi công giếng độc lập.",
-                "forecast_24h": "Tiếp tục khoan lỗ giếng, duy trì các thông số công nghệ và kiểm soát dung dịch.",
-                "npt_hours": 0.0,
-                "npt_summary": "Không có NPT.",
-                "operations_log": [{"time": "00:00 - 24:00", "hours": 24.0, "desc": "Khoan tạo vỉa."}],
-                "plan_points": [{"md": 0, "inc": 0, "azi": 0}, {"md": 500, "inc": 0, "azi": 0}, {"md": new_w_td, "inc": 20, "azi": 120}],
-                "survey_points": [{"md": 0, "inc": 0, "azi": 0}, {"md": 500, "inc": 0.2, "azi": 20}, {"md": 1200, "inc": 10.5, "azi": 115}]
-            }
-            st.query_params["well"] = w_id
-            st.success(f"✓ Đã tạo thành công giếng độc lập {w_id}!")
-            st.rerun()
+            if w_id in st.session_state["wells_db"]:
+                st.error("❌ Tên giếng này đã tồn tại!")
+            else:
+                # Khởi tạo dữ liệu gốc kèm theo các thông số kỹ thuật từ dòng 621-644 của bạn
+                st.session_state["wells_db"][w_id] = {
+                    "name": w_id,
+                    "rig": new_w_rig.strip() or "PV DRILLING",
+                    "block": new_w_block.strip() or "Chưa xác định",
+                    "basin": new_w_basin,
+                    "field": new_w_name.strip(),
+                    "status": "Active Drilling",
+                    "target_depth": new_w_td,
+                    "current_md": 1200,
+                    "current_tvd": 1150,
+                    "hole_size": "12-1/4\"",
+                    "bit_type": "PDC",
+                    "mud_weight": "1.25 SG",
+                    "flow_rate": "750 GPM",
+                    "spp": "2800 psi",
+                    "rop": "14.0 m/h",
+                    "last_update": "2026-10-14 06:00",
+                    "activity_24h_summary": "Bắt đầu triển khai khoan tạo vỉa theo kế hoạch thi công giếng độc lập.",
+                    "forecast_24h_summary": "Tiếp tục khoan lỗ giếng, duy trì các thông số công nghệ và kiểm soát dung dịch.",
+                    "npt_hours": 0.0,
+                    "npt_summary": "Không có NPT.",
+                    "operations_log": [{"time": "00:00 - 24:00", "hours": 24.0, "desc": "Khoan tạo vỉa."}],
+                    "plan_points": [{"md": 0, "inc": 0, "azi": 0}, {"md": 500, "inc": 0, "azi": 0}, {"md": new_w_td, "inc": 20, "azi": 120}],
+                    "survey_points": [{"md": 0, "inc": 0, "azi": 0}, {"md": 500, "inc": 0.2, "azi": 20}, {"md": 1200, "inc": 10.5, "azi": 115}]
+                }
+                st.query_params["well"] = w_id
+                st.success(f"✓ Đã tạo thành công giếng độc lập {w_id}!")
+                st.rerun()
+        else:
+            st.error("❌ Vui lòng nhập tên giếng!")
+
 
 
 # ==========================================
