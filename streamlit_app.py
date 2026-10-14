@@ -645,7 +645,35 @@ if st.button("💾 Lưu thay đổi thông tin giếng", key="btn_save_well"):
         current_key = edit_name
     else:
         current_key = selected_well_name
-        
+         st.markdown("---")
+    st.write("**🗑️ Xóa giếng khoan hiện tại:**")
+    st.warning(f"Hành động này sẽ xóa hoàn toàn giếng **{selected_well_name}** khỏi phiên làm việc.")
+    
+    # Ô checkbox bắt buộc người dùng xác nhận để tránh bấm nhầm nút
+    confirm_delete = st.checkbox(f"Tôi chắc chắn muốn xóa giếng {selected_well_name}", key="chk_delete_well")
+
+    if st.button("❌ Thực hiện Xóa Giếng", key="btn_delete_well"):
+        if confirm_delete:
+            # 1. Xóa giếng được chọn khỏi Dictionary trong bộ nhớ tạm Session State
+            st.session_state["wells_db"].pop(selected_well_name)
+            
+            # 2. Tìm danh sách các giếng còn lại sau khi xóa
+            remaining_wells = list(st.session_state["wells_db"].keys())
+            
+            if remaining_wells:
+                # Nếu còn giếng, tự động chuyển URL điều hướng sang giếng đầu tiên còn lại
+                st.query_params["well"] = remaining_wells[0]
+            else:
+                # Nếu xóa sạch không còn giếng nào, xóa luôn tham số URL
+                st.query_params.clear()
+                
+            st.success(f"🗑️ Đã xóa giếng '{selected_well_name}' thành công!")
+            
+            # 3. Ép Streamlit chạy lại từ đầu để cập nhật danh sách thanh chọn Sidebar lập tức
+            st.rerun()
+        else:
+            st.error("❌ Vui lòng tích chọn ô màu vàng ở trên để xác nhận trước khi thực hiện xóa!")
+   
     # Cập nhật thông tin chi tiết vào Session State dựa trên dữ liệu mới nhập
     st.session_state["wells_db"][current_key]['name'] = edit_name
     st.session_state["wells_db"][current_key]['rig'] = edit_rig
