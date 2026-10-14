@@ -592,9 +592,47 @@ status_colors = {
 current_sidebar_well = st.session_state["wells_db"].get(selected_well_name, {})
 st.sidebar.info(f"**Giàn:** {current_sidebar_well.get('rig', '')}\n\n**Lô:** {current_sidebar_well.get('block', 'Lô 15-1')}\n\n**Bể:** {current_sidebar_well.get('basin', '')}")
 
-st.markdown("---")
 st.write("**🗑️ Xóa giếng khoan hiện tại:**")
 st.warning(f"Hành động này sẽ xóa hoàn toàn giếng **{selected_well_name}** khỏi phiên làm việc.")
+
+confirm_delete = st.checkbox(f"Tôi chắc chắn muốn xóa giếng {selected_well_name}", key="chk_delete_well")
+
+if st.button("❌ Thực hiện Xóa Giếng", key="btn_delete_well"):
+    if confirm_delete:
+        st.session_state["wells_db"].pop(selected_well_name)
+        remaining_wells = list(st.session_state["wells_db"].keys())
+        if remaining_wells:
+            st.query_params["well"] = remaining_wells
+        else:
+            st.query_params.clear()
+            
+        with open("wells_data.json", "w", encoding="utf-8") as f:
+            json.dump(st.session_state["wells_db"], f, ensure_ascii=False, indent=4)
+            
+        st.success(f"🗑️ Đã xóa giếng '{selected_well_name}' thành công!")
+        st.rerun()
+    else:
+        st.error("❌ Vui lòng tích chọn ô màu vàng ở trên để xác nhận trước khi thực hiện xóa!")
+
+st.markdown("---")
+
+with st.sidebar.expander("📝 Chỉnh sửa / Thêm Giếng Mới"):
+    st.write("**✏️ Sửa thông tin giếng hiện tại:**")
+    current_well_data = st.session_state["wells_db"].get(selected_well_name, {})
+    
+    edit_name = st.text_input("Tên giếng:", value=selected_well_name, key="edit_name")
+    edit_rig = st.text_input("Giàn Khoan:", value=current_well_data.get('rig', ''), key="edit_rig")
+    edit_block = st.text_input("Số Lô:", value=current_well_data.get('block', 'Lô 15-1'), key="edit_block")
+    
+    basin_options = ["Bể Cửu Long", "Bể Nam Côn Sơn", "Bể Sông Hồng", "Bể Malay - Thổ Chu", "Bể Phú Khánh", "Khác"]
+    well_basin = current_well_data.get('basin', '')
+    default_basin_idx = basin_options.index(well_basin) if well_basin in basin_options else 0
+    edit_basin = st.selectbox("Bể trầm tích:", basin_options, index=default_basin_idx, key="edit_basin")
+    
+    edit_field = st.text_input("Mỏ / Cấu tạo:", value=current_well_data.get('field', ''), key="edit_field")
+
+    if st.button("💾 Lưu thay đổi thông tin giếng", key="btn_save_well"):
+
 
 # Ô checkbox bắt buộc người dùng xác nhận để tránh bấm nhầm nút
 confirm_delete = st.checkbox(f"Tôi chắc chắn muốn xóa giếng {selected_well_name}", key="chk_delete_well")
